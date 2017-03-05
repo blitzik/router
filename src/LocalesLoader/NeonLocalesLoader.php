@@ -62,7 +62,7 @@ final class NeonLocalesLoader implements ILocalesLoader
         }
 
         $this->cache->save('defaultLocale', $defaultLocale);
-        $this->cache->save('neonLocales', $locales);
+        $this->cache->save('neonLocales', array_values($locales));
         $this->cache->save('areLocalesProcessed', true);
     }
 
