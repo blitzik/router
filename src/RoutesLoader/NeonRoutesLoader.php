@@ -121,7 +121,7 @@ final class NeonRoutesLoader implements IRoutesLoader
      */
     private function createIdentifier(string $urlPath): string
     {
-        return lcfirst(str_replace('/', '', ucwords(lcfirst(str_replace('-', '', ucwords($urlPath, '-'))), '/')));
+        return lcfirst(str_replace(['/', '-'], '', ucwords($urlPath, '/-')));
     }
 
 }
