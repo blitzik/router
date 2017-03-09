@@ -40,19 +40,8 @@ class RouterExtension extends CompilerExtension
         $router = $cb->addDefinition($this->prefix('router'));
         $router->setClass(Router::class)
                ->addSetup('setAsSecured', [$config['isSecured']])
-               ->addSetup('setFilesExtension', [$config['filesExtension']]);
-    }
-
-
-    /**
-     * Adjusts DI container before is compiled to PHP class. Intended to be overridden by descendant.
-     * @return void
-     */
-    public function beforeCompile()
-    {
-        $cb = $this->getContainerBuilder();
-
-        $cb->removeDefinition('routing.router');
+               ->addSetup('setFilesExtension', [$config['filesExtension']])
+               ->setAutowired(false);
     }
 
 }
