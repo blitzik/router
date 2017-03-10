@@ -5,6 +5,11 @@ Router with basic loaders is useful for small websites with a few pages.
 You just define your url addresses in Neon file and the Router will
 take care of the rest.
 
+Installation
+---
+
+<pre>$ composer require blitzik/router</pre>
+
 Configuration
 ---
 
