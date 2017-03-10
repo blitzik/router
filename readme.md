@@ -57,7 +57,7 @@ router: # this is the name of registered extension
 	routingFile: %appDir%/your/file/path/routing.neon
 ```
 
-Urls' definition
+Urls definition
 ---
 
 Urls are defined under **paths** section.
