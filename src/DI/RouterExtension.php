@@ -11,9 +11,9 @@ use Nette\DI\Helpers;
 class RouterExtension extends CompilerExtension
 {
     private $defaults = [
-        'filesExtension' => null,
+        'extension' => null,
         'isSecured' => false,
-        'routingFile' => '%appDir%/routing/routing.neon',
+        'routingFile' => '%appDir%/router/routing.neon',
     ];
 
 
@@ -40,7 +40,7 @@ class RouterExtension extends CompilerExtension
         $router = $cb->addDefinition($this->prefix('router'));
         $router->setClass(Router::class)
                ->addSetup('setAsSecured', [$config['isSecured']])
-               ->addSetup('setFilesExtension', [$config['filesExtension']])
+               ->addSetup('setFilesExtension', [$config['extension']])
                ->setAutowired(false);
     }
 
