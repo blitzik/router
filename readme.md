@@ -9,7 +9,7 @@ Configuration
 ---
 
 So you've downloaded the extension and now you have to register it in your
-configuration file like this:
+configuration file:
 
 **config.neon**
 ```neon
@@ -20,7 +20,7 @@ extensions:
 Extension is now registered under the name **router**.
 Let's add the Router into RouteList.
 
-Find your **RouterFactory.php** and modify it like this:
+Find your **RouterFactory.php** and modify it:
 
 ```php
 class RouterFactory
@@ -49,7 +49,7 @@ services:
 
 Router is ready so let's create some urls. Default location for your
 routing file is app/router/routing.neon. The location can be changed
-in config file like this:
+in config file:
 
 **config.neon**
 ```neon
@@ -181,9 +181,9 @@ locales:
 	- de
 
 paths:
-	"": Homepage:default		
-	"stranka": Page:default
-	"en/page": Page:default
+	"": Homepage:default	# cs
+	"stranka": Page:default # cs
+	"en/page": Page:default # en
 ```
 
 When you define your locales like this then the first locale in list will be
@@ -197,9 +197,9 @@ locales:
 	- de
 
 paths:
-	"": Homepage:default		
-	"page": Page:default
-	"cs/stranka": Page:default
+	"": Homepage:default	   # en
+	"page": Page:default       # en
+	"cs/stranka": Page:default # cs
 ```
 
 Locale **have to be specified at the start of the URL path** so Router can
