@@ -1,5 +1,5 @@
 {
-  "name": "blitzik/Router",
+  "name": "blitzik/router",
   "description": "A Router for Nette framework",
   "keywords": ["nette", "router", "routing"],
   "license": ["MIT"],
