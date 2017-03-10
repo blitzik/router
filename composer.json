@@ -1,0 +1,34 @@
+{
+  "name": "blitzik/Router",
+  "description": "A Router for Nette framework",
+  "keywords": ["nette", "router", "routing"],
+  "license": ["MIT"],
+  "authors": [
+    {
+      "name": "Aleš Tichava",
+      "email": "ales.tichava@gmail.com"
+    }
+  ],
+
+  "require": {
+    "php": ">=7.0",
+    "nette/application": "^2.4",
+    "nette/di": "^2.4",
+    "nette/caching": "^2.5",
+    "nette/robot-loader": "^2.4"
+  },
+
+  "require-dev": {
+    "nette/application": "^2.4",
+    "nette/di": "^2.4",
+    "nette/caching": "^2.5",
+    "nette/robot-loader": "^2.4",
+    "tracy/tracy": "^2.4",
+    "nette/bootstrap": "^2.4"
+  },
+
+  "autoload": {
+    "classmap": ["src/"]
+  }
+
+}
