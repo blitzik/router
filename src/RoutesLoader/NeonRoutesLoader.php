@@ -2,6 +2,7 @@
 
 namespace blitzik\Router\RoutesLoader;
 
+use blitzik\Router\Exceptions\RouteNotFoundException;
 use blitzik\Router\Exceptions\TooManyRedirectionsException;
 use Nette\Caching\IStorage;
 use blitzik\Router\Router;
@@ -72,10 +73,15 @@ final class NeonRoutesLoader implements IRoutesLoader
      * @param string $urlPath
      * @param array $paths
      * @return Url
+     * @throws RouteNotFoundException
      * @throws TooManyRedirectionsException
      */
     private function buildUrl(string $urlPath, array $paths): Url
     {
+        if (!isset($paths[$urlPath])) {
+            throw new RouteNotFoundException(sprintf('Requested url "%s" was NOT found in your urls list! Check your routing file.', $urlPath));
+        }
+
         $data = $paths[$urlPath];
 
         $url = new Url();
@@ -86,19 +92,20 @@ final class NeonRoutesLoader implements IRoutesLoader
             $url->setInternalId($this->createIdentifier($urlPath));
 
         } elseif (is_array($data)) {
-            $url->setDestination($data['destination']);
-            if (isset($data['id'])) {
-                $url->setInternalId($data['id']);
-            } else {
-                $url->setInternalId($this->createIdentifier($urlPath));
-            }
-
             if (isset($data['redirectTo'])) {
                 $urlToRedirect = $this->buildUrl($data['redirectTo'], $paths);
                 if ($urlToRedirect->getUrlToRedirect() !== null) {
                     throw new TooManyRedirectionsException();
                 }
                 $url->setRedirectTo($urlToRedirect);
+
+            } else {
+                $url->setDestination($data['destination']);
+                if (isset($data['id'])) {
+                    $url->setInternalId($data['id']);
+                } else {
+                    $url->setInternalId($this->createIdentifier($urlPath));
+                }
             }
         }
 
