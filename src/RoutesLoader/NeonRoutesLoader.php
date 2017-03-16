@@ -2,8 +2,8 @@
 
 namespace blitzik\Router\RoutesLoader;
 
-use blitzik\Router\Exceptions\RouteNotFoundException;
 use blitzik\Router\Exceptions\TooManyRedirectionsException;
+use blitzik\Router\Exceptions\RouteNotFoundException;
 use Nette\Caching\IStorage;
 use blitzik\Router\Router;
 use Nette\Caching\Cache;
@@ -79,7 +79,7 @@ final class NeonRoutesLoader implements IRoutesLoader
     private function buildUrl(string $urlPath, array $paths): Url
     {
         if (!isset($paths[$urlPath])) {
-            throw new RouteNotFoundException(sprintf('Requested url "%s" was NOT found in your urls list! Check your routing file.', $urlPath));
+            throw new RouteNotFoundException(sprintf('Requested path "%s" was NOT found in your paths list! Check your routing file.', $urlPath));
         }
 
         $data = $paths[$urlPath];
@@ -101,8 +101,18 @@ final class NeonRoutesLoader implements IRoutesLoader
 
             } else {
                 $url->setDestination($data['destination']);
-                if (isset($data['id'])) {
-                    $url->setInternalId($data['id']);
+                if (isset($data['internalParameters'])) {
+                    foreach ($data['internalParameters'] as $name => $value) {
+                        if ($name === 'internalId') {
+                            $url->setInternalId($value);
+                        } else {
+                            $url->addParameter($name, $value);
+                        }
+                    }
+                }
+
+                if (isset($data['internalId'])) {
+                    $url->setInternalId($data['internalId']);
                 } else {
                     $url->setInternalId($this->createIdentifier($urlPath));
                 }

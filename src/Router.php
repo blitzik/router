@@ -99,7 +99,12 @@ class Router implements IRouter
             $action = $urlEntity->getUrlToRedirect()->getAction();
         }
 
-        $params = $httpRequest->getQuery();
+        $params = [];
+        foreach ($urlEntity->getParameters() as $name => $value) {
+            $params[$name] = $value;
+        }
+
+        $params = $httpRequest->getQuery() + $params;
         $params['action'] = $action;
 
         if ($locale !== null) {
@@ -160,6 +165,9 @@ class Router implements IRouter
 
         $params = $appRequest->getParameters();
         unset($params['action'], $params['locale'], $params['internalId']);
+        foreach (array_keys($urlEntity->getParameters()) as $paramName) {
+            unset($params[$paramName]);
+        }
 
         $q = http_build_query($params, '', '&');
         if ($q != '') {

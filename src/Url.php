@@ -21,6 +21,9 @@ class Url
     /** @var Url|null */
     private $urlToRedirect;
 
+    /** @var array */
+    private $parameters = [];
+
     
     /*
      * --------------------
@@ -70,6 +73,32 @@ class Url
     public function setRedirectTo(Url $actualUrlToRedirect)
     {
         $this->urlToRedirect = $actualUrlToRedirect;
+    }
+
+
+    public function addParameter(string $name, string $value)
+    {
+        $this->parameters[$name] = $value;
+    }
+
+
+    /**
+     * @param string $name
+     * @return string|null
+     */
+    public function getParameter(string $name)
+    {
+        if (isset($this->parameters[$name])) {
+            return $this->parameters[$name];
+        }
+
+        return null;
+    }
+
+
+    public function getParameters(): array
+    {
+        return $this->parameters;
     }
     
 

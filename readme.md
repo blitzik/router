@@ -146,12 +146,39 @@ own:
 paths:
 	"": Homepage:default
 	"about":
-	    destination: Page:default
-	    id: aboutPage # your identifier
+		destination: Page:default
+		internalId: aboutPage # your identifier
 	    
 	"contact":
-	    destination: Page:default
-	    id: contactPage # your identifier
+		destination: Page:default
+		internalId: contactPage # your identifier
+```
+
+If you need a parameter or more, you can define internal parameters
+under **internalParameters** section:
+
+```neon
+paths:
+	"cool-page/january":
+		destination: Page:default
+		internalParameters:
+			month: 1
+
+	"cool-page/february":
+		destination: Page:default
+		internalParameters:
+			month: 2
+```
+
+```php
+class PagePresenter extends Nette\Application\UI\Presenter
+{
+    // and here you will get the internal parameter/s
+    public function actionDefault($month)
+    {
+        
+    }
+}
 ```
 
 **Cache needs to be cleared after every change in your routing file.**
