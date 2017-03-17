@@ -4,3 +4,9 @@ paths:
 	"page-name": Page:default
 	"page-1name": Page:default
 	"en/page-name": Page:default
+
+	"page-with-internal-params":
+		destination: Page:default
+		internalParameters:
+			a: c
+			b: d

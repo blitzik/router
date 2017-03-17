@@ -56,3 +56,13 @@ Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
 Assert::same('default', $url->getAction());
 Assert::same('enPageName', $url->getInternalId());
+
+// -----
+
+$url = $routesLoader->loadUrlByPath('page-with-internal-params');
+Assert::same('page-with-internal-params', $url->getUrlPath());
+Assert::same('Page:default', $url->getDestination());
+Assert::same('Page', $url->getPresenter());
+Assert::same('default', $url->getAction());
+Assert::same('pageWithInternalParams', $url->getInternalId());
+Assert::same(['a' => 'c', 'b' => 'd'], $url->getParameters());
