@@ -19,7 +19,7 @@ class Router implements IRouter
     public $onUrlNotFound;
 
 
-    const ROUTING_NAMESPACE = 'appNeonRouting';
+    const ROUTING_NAMESPACE = 'blitzik.routing';
 
 
     /** @var ILocalesLoader */
