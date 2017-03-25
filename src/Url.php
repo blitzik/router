@@ -32,9 +32,9 @@ class Url
      */
 
 
-    public function setUrlPath(string $path)
+    public function setUrlPath(string $path, bool $lower = false)
     {
-        $this->urlPath = Strings::webalize($path, '/.');
+        $this->urlPath = Strings::webalize($path, '/.', $lower);
     }
 
 
