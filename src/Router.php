@@ -159,7 +159,7 @@ class Router implements IRouter
         $resultPath = sprintf(
             '%s%s%s',
             $baseUrl,
-            Strings::webalize($path, '/.'),
+            $path,
             ($this->filesExtension !== null ? '.' . $this->filesExtension : null)
         );
 
