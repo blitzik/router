@@ -32,19 +32,19 @@ class Url
      */
 
 
-    public function setUrlPath(string $path, bool $lower = false)
+    public function setUrlPath(string $path, bool $lower = false): void
     {
         $this->urlPath = Strings::webalize($path, '/.', $lower);
     }
 
 
-    public function setInternalId(string $internalId = null)
+    public function setInternalId(string $internalId = null): void
     {
         $this->internalId = $internalId;
     }
 
 
-    public function setDestination(string $presenter, string $action = null)
+    public function setDestination(string $presenter, string $action = null): void
     {
         if ($action === null) {
             $destination = $presenter;
@@ -70,23 +70,19 @@ class Url
     }
 
 
-    public function setRedirectTo(Url $actualUrlToRedirect)
+    public function setRedirectTo(Url $actualUrlToRedirect): void
     {
         $this->urlToRedirect = $actualUrlToRedirect;
     }
 
 
-    public function addParameter(string $name, string $value)
+    public function addParameter(string $name, string $value): void
     {
         $this->parameters[$name] = $value;
     }
 
 
-    /**
-     * @param string $name
-     * @return string|null
-     */
-    public function getParameter(string $name)
+    public function getParameter(string $name): ?string
     {
         if (isset($this->parameters[$name])) {
             return $this->parameters[$name];
@@ -109,25 +105,19 @@ class Url
      */
 
 
-    public function getUrlPath():string
+    public function getUrlPath(): string
     {
         return $this->urlPath;
     }
 
 
-    /**
-     * @return string|null
-     */
-    public function getInternalId()
+    public function getInternalId(): ?string
     {
         return $this->internalId;
     }
 
 
-    /**
-     * @return Url|null
-     */
-    public function getUrlToRedirect()
+    public function getUrlToRedirect(): ?Url
     {
         return $this->urlToRedirect;
     }
