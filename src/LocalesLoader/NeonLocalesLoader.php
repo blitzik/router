@@ -12,6 +12,7 @@ final class NeonLocalesLoader implements ILocalesLoader
 {
     use SmartObject;
 
+
     /** @var string */
     private $routingFilePath;
 
@@ -42,7 +43,7 @@ final class NeonLocalesLoader implements ILocalesLoader
     }
 
 
-    private function createLocalesList()
+    private function createLocalesList(): void
     {
         if ($this->cache->load('areLocalesProcessed') !== null) {
             return;

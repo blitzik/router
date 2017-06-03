@@ -164,7 +164,7 @@ class Url
     /**
      * @return string|null
      */
-    public function getAbsoluteDestination()
+    public function getAbsoluteDestination(): ?string
     {
         if (!isset($this->presenter, $this->action)) {
             return null;

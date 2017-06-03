@@ -7,7 +7,6 @@ use blitzik\Router\RoutesLoader\IRoutesLoader;
 use Nette\Application\IRouter;
 use Nette\Application\Request;
 use Nette\Http\IRequest;
-use Nette\Utils\Strings;
 use Nette\SmartObject;
 use Nette\Http\Url;
 
@@ -45,23 +44,19 @@ class Router implements IRouter
     }
 
 
-    public function setAsSecured(bool $secured)
+    public function setAsSecured(bool $secured): void
     {
         $this->isSecure = $secured;
     }
 
 
-    public function setFilesExtension(string $fileExtension = null)
+    public function setFilesExtension(string $fileExtension = null): void
     {
         $this->filesExtension = $fileExtension;
     }
 
 
-    /**
-     * @param IRequest $httpRequest
-     * @return Request|NULL
-     */
-    public function match(IRequest $httpRequest)
+    public function match(IRequest $httpRequest): ?Request
     {
         $url = $httpRequest->getUrl();
         $basePath = $url->getPath();
@@ -125,12 +120,7 @@ class Router implements IRouter
     }
 
 
-    /**
-     * @param Request $appRequest
-     * @param Url $refUrl
-     * @return string|NULL
-     */
-    public function constructUrl(Request $appRequest, Url $refUrl)
+    public function constructUrl(Request $appRequest, Url $refUrl): ?string
     {
         $urlEntity = $this->routesLoader
                           ->loadUrlByDestination(

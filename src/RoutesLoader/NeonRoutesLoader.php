@@ -30,19 +30,13 @@ final class NeonRoutesLoader implements IRoutesLoader
     }
 
 
-    /**
-     * @inheritdoc
-     */
-    public function loadUrlByPath(string $urlPath)
+    public function loadUrlByPath(string $urlPath): ?Url
     {
         return $this->cache->load($urlPath);
     }
 
 
-    /**
-     * @inheritdoc
-     */
-    public function loadUrlByDestination(string $presenter, string $action, string $internalId = null)
+    public function loadUrlByDestination(string $presenter, string $action, string $internalId = null): ?Url
     {
         $destinationCacheKey = sprintf('%s:%s:%s', $presenter, $action, $internalId);
 
@@ -50,7 +44,7 @@ final class NeonRoutesLoader implements IRoutesLoader
     }
 
 
-    private function createUrlsList(string $routingFilePath)
+    private function createUrlsList(string $routingFilePath): void
     {
         if ($this->cache->load('areRoutesProcessed') !== null) {
             return;

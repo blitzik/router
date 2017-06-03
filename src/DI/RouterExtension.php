@@ -21,7 +21,7 @@ class RouterExtension extends CompilerExtension
      * Processes configuration data. Intended to be overridden by descendant.
      * @return void
      */
-    public function loadConfiguration()
+    public function loadConfiguration(): void
     {
         $config = $this->getConfig() + $this->defaults;
         $this->setConfig($config);
