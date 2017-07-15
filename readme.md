@@ -174,7 +174,7 @@ paths:
 class PagePresenter extends Nette\Application\UI\Presenter
 {
     // and here you will get the internal parameter/s
-    public function actionDefault($month)
+    public function actionDefault($internalId, $month)
     {
         
     }
