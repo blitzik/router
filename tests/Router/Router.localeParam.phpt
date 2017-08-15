@@ -24,14 +24,12 @@ Assert::null(testConstructUrl($router, 'WrongPresenter', ['action' => 'default',
 
 testMatch($router, '', 'Homepage', [
     'action' => 'default',
-    'locale' => 'cs',
-    'internalId' => ''
+    'locale' => 'cs'
 ]);
 Assert::same(
     'http://example.com/',
     testConstructUrl($router, 'Homepage', [
         'action' => 'default',
-        'internalId' => '',
         'locale' => 'cs'
     ])
 );

@@ -39,7 +39,7 @@ final class NeonRoutesLoader implements IRoutesLoader
 
     public function loadUrlByDestination(string $presenter, string $action, string $internalId = null): ?Url
     {
-        $destinationCacheKey = sprintf('%s:%s:%s', $presenter, $action, $internalId);
+        $destinationCacheKey = sprintf('%s:%s', $presenter, $action) . ($internalId !== null ? ':' . $internalId : null);
 
         return $this->cache->load($destinationCacheKey);
     }

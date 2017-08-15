@@ -19,7 +19,8 @@ Assert::same('', $url->getUrlPath());
 Assert::same('Homepage:default', $url->getDestination());
 Assert::same('Homepage', $url->getPresenter());
 Assert::same('default', $url->getAction());
-Assert::same('', $url->getInternalId());
+Assert::same(null, $url->getInternalId());
+Assert::same(false, $url->isOneWay());
 
 // -----
 
@@ -29,6 +30,7 @@ Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
 Assert::same('default', $url->getAction());
 Assert::same('pagename', $url->getInternalId());
+Assert::same(false, $url->isOneWay());
 
 // -----
 
@@ -38,6 +40,7 @@ Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
 Assert::same('default', $url->getAction());
 Assert::same('pageName', $url->getInternalId());
+Assert::same(false, $url->isOneWay());
 
 // -----
 
@@ -47,6 +50,7 @@ Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
 Assert::same('default', $url->getAction());
 Assert::same('page1name', $url->getInternalId());
+Assert::same(false, $url->isOneWay());
 
 // -----
 
@@ -56,6 +60,7 @@ Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
 Assert::same('default', $url->getAction());
 Assert::same('enPageName', $url->getInternalId());
+Assert::same(false, $url->isOneWay());
 
 // -----
 
@@ -66,3 +71,21 @@ Assert::same('Page', $url->getPresenter());
 Assert::same('default', $url->getAction());
 Assert::same('pageWithInternalParams', $url->getInternalId());
 Assert::same(['a' => 'c', 'b' => 'd'], $url->getParameters());
+Assert::same(false, $url->isOneWay());
+
+// ----- redirection
+
+$url = $routesLoader->loadUrlByPath('old-page');
+Assert::same('old-page', $url->getUrlPath());
+Assert::same('OldPage:default', $url->getDestination());
+Assert::same('OldPage', $url->getPresenter());
+Assert::same('default', $url->getAction());
+Assert::same('oldPage', $url->getInternalId());
+Assert::same(false, $url->isOneWay());
+
+Assert::same('page-name', $url->getUrlToRedirect()->getUrlPath());
+Assert::same('Page:default', $url->getUrlToRedirect()->getDestination());
+Assert::same('Page', $url->getUrlToRedirect()->getPresenter());
+Assert::same('default', $url->getUrlToRedirect()->getAction());
+Assert::same('pageName', $url->getUrlToRedirect()->getInternalId());
+Assert::same(false, $url->getUrlToRedirect()->isOneWay());

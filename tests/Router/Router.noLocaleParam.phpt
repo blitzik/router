@@ -24,13 +24,11 @@ Assert::null(testConstructUrl($router, 'WrongPresenter', ['action' => 'default']
 
 testMatch($router, '', 'Homepage', [
     'action' => 'default',
-    'internalId' => ''
 ]);
 Assert::same(
     'http://example.com/',
     testConstructUrl($router, 'Homepage', [
         'action' => 'default',
-        'internalId' => '',
     ])
 );
 

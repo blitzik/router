@@ -10,3 +10,7 @@ paths:
 		internalParameters:
 			a: c
 			b: d
+
+	"old-page":
+		destination: OldPage:default
+		redirectTo: page-name
