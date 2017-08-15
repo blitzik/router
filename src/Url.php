@@ -40,7 +40,7 @@ class Url
 
     public function setInternalId(string $internalId = null): void
     {
-        $this->internalId = $internalId;
+        $this->internalId = $internalId === '' ? null : $internalId;
     }
 
 

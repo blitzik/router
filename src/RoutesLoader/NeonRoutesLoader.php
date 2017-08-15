@@ -2,6 +2,7 @@
 
 namespace blitzik\Router\RoutesLoader;
 
+use blitzik\Router\Exceptions\DestinationNotFoundException;
 use blitzik\Router\Exceptions\TooManyRedirectionsException;
 use blitzik\Router\Exceptions\RouteNotFoundException;
 use Nette\Caching\IStorage;
@@ -53,7 +54,7 @@ final class NeonRoutesLoader implements IRoutesLoader
         $routingData = Neon::decode(file_get_contents($routingFilePath));
         foreach ($routingData['paths'] as $urlPath => $data) {
             $url = $this->buildUrl($urlPath, $routingData['paths']);
-            $destinationCacheKey = $url->getDestination(). ':' . $url->getInternalId();
+            $destinationCacheKey = $url->getDestination() . ($url->getInternalId() !== null ? ':' . $url->getInternalId() : null);
 
             $this->cache->save($urlPath, $url);
             $this->cache->save($destinationCacheKey, $url);
@@ -68,6 +69,7 @@ final class NeonRoutesLoader implements IRoutesLoader
      * @param array $paths
      * @return Url
      * @throws RouteNotFoundException
+     * @throws DestinationNotFoundException
      * @throws TooManyRedirectionsException
      */
     private function buildUrl(string $urlPath, array $paths): Url
@@ -86,30 +88,33 @@ final class NeonRoutesLoader implements IRoutesLoader
             $url->setInternalId($this->createIdentifier($urlPath));
 
         } elseif (is_array($data)) {
+            if (!array_key_exists('destination', $data)) {
+                throw new DestinationNotFoundException(sprintf('"destination" key is missing in route "%s". Check your routing file.', $urlPath));
+            }
+
+            $url->setDestination($data['destination']);
+            if (isset($data['internalParameters'])) {
+                foreach ($data['internalParameters'] as $name => $value) {
+                    if ($name === 'internalId') {
+                        $url->setInternalId($value);
+                    } else {
+                        $url->addParameter($name, $value);
+                    }
+                }
+            }
+
+            if (isset($data['internalId'])) {
+                $url->setInternalId($data['internalId']);
+            } else {
+                $url->setInternalId($this->createIdentifier($urlPath));
+            }
+
             if (isset($data['redirectTo'])) {
                 $urlToRedirect = $this->buildUrl($data['redirectTo'], $paths);
                 if ($urlToRedirect->getUrlToRedirect() !== null) {
                     throw new TooManyRedirectionsException();
                 }
                 $url->setRedirectTo($urlToRedirect);
-
-            } else {
-                $url->setDestination($data['destination']);
-                if (isset($data['internalParameters'])) {
-                    foreach ($data['internalParameters'] as $name => $value) {
-                        if ($name === 'internalId') {
-                            $url->setInternalId($value);
-                        } else {
-                            $url->addParameter($name, $value);
-                        }
-                    }
-                }
-
-                if (isset($data['internalId'])) {
-                    $url->setInternalId($data['internalId']);
-                } else {
-                    $url->setInternalId($this->createIdentifier($urlPath));
-                }
             }
         }
 

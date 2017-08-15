@@ -193,6 +193,7 @@ Router supports simple redirection from one url to other:
 paths:
 	"": Homepage:default
 	"page":
+		destination: Page:default
 		redirectTo: different-page
 		
 	"different-page": Page:default
