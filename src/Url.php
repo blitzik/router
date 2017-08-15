@@ -21,6 +21,9 @@ class Url
     /** @var Url|null */
     private $urlToRedirect;
 
+    /** @var bool */
+    private $isOneWay = false;
+
     /** @var array */
     private $parameters = [];
 
@@ -76,6 +79,12 @@ class Url
     }
 
 
+    public function setAsOneWay(): void
+    {
+        $this->isOneWay = true;
+    }
+
+
     public function addParameter(string $name, string $value): void
     {
         $this->parameters[$name] = $value;
@@ -120,6 +129,12 @@ class Url
     public function getUrlToRedirect(): ?Url
     {
         return $this->urlToRedirect;
+    }
+
+
+    public function isOneWay(): bool
+    {
+        return $this->isOneWay;
     }
 
 

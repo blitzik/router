@@ -57,7 +57,9 @@ final class NeonRoutesLoader implements IRoutesLoader
             $destinationCacheKey = $url->getDestination() . ($url->getInternalId() !== null ? ':' . $url->getInternalId() : null);
 
             $this->cache->save($urlPath, $url);
-            $this->cache->save($destinationCacheKey, $url);
+            if (!$url->isOneWay()) {
+                $this->cache->save($destinationCacheKey, $url);
+            }
         }
 
         $this->cache->save('areRoutesProcessed', true);
@@ -87,38 +89,53 @@ final class NeonRoutesLoader implements IRoutesLoader
             $url->setDestination($data);
             $url->setInternalId($this->createIdentifier($urlPath));
 
-        } elseif (is_array($data)) {
-            if (!array_key_exists('destination', $data)) {
-                throw new DestinationNotFoundException(sprintf('"destination" key is missing in route "%s". Check your routing file.', $urlPath));
-            }
+            return $url;
+        }
 
-            $url->setDestination($data['destination']);
-            if (isset($data['internalParameters'])) {
-                foreach ($data['internalParameters'] as $name => $value) {
-                    if ($name === 'internalId') {
-                        $url->setInternalId($value);
-                    } else {
-                        $url->addParameter($name, $value);
-                    }
+        if (isset($data['oneWay'])) {
+            $this->setRedirectionRoute($data['oneWay'], $url, $paths);
+            $url->setAsOneWay();
+
+            return $url;
+        }
+
+        if (!array_key_exists('destination', $data)) {
+            throw new DestinationNotFoundException(sprintf('"destination" key is missing in route "%s". Check your routing file.', $urlPath));
+        }
+
+        $url->setDestination($data['destination']);
+        if (isset($data['internalParameters'])) {
+            foreach ($data['internalParameters'] as $name => $value) {
+                if ($name === 'internalId') {
+                    $url->setInternalId($value);
+                } else {
+                    $url->addParameter($name, $value);
                 }
-            }
-
-            if (isset($data['internalId'])) {
-                $url->setInternalId($data['internalId']);
-            } else {
-                $url->setInternalId($this->createIdentifier($urlPath));
-            }
-
-            if (isset($data['redirectTo'])) {
-                $urlToRedirect = $this->buildUrl($data['redirectTo'], $paths);
-                if ($urlToRedirect->getUrlToRedirect() !== null) {
-                    throw new TooManyRedirectionsException();
-                }
-                $url->setRedirectTo($urlToRedirect);
             }
         }
 
+        if (isset($data['internalId'])) {
+            $url->setInternalId($data['internalId']);
+        } else {
+            $url->setInternalId($this->createIdentifier($urlPath));
+        }
+
+        if (isset($data['redirectTo'])) {
+            $this->setRedirectionRoute($data['redirectTo'], $url, $paths);
+        }
+
+
         return $url;
+    }
+
+
+    private function setRedirectionRoute(string $routePath, Url $url, array $paths)
+    {
+        $urlToRedirect = $this->buildUrl($routePath, $paths);
+        if ($urlToRedirect->getUrlToRedirect() !== null) {
+            throw new TooManyRedirectionsException();
+        }
+        $url->setRedirectTo($urlToRedirect);
     }
 
 
