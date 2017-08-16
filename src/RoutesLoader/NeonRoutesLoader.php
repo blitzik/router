@@ -90,6 +90,10 @@ final class NeonRoutesLoader implements IRoutesLoader
             throw new RouteNotFoundException(sprintf('Requested path "%s" was NOT found in your paths list! Check your routing file.', $urlPath));
         }
 
+        if (isset($this->builtUrls['entities'][$urlPath])) {
+            return $this->builtUrls['entities'][$urlPath];
+        }
+
         $data = $paths[$urlPath];
 
         $url = new Url();
