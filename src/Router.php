@@ -129,7 +129,7 @@ class Router implements IRouter
                               $appRequest->getParameter('internalId')
                           );
 
-        if ($urlEntity === null) {
+        if ($urlEntity === null or $urlEntity->isOneWay()) {
             return null;
         }
 

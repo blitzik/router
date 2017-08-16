@@ -1,5 +1,9 @@
 paths:
 	"": Homepage:default
+
+	"test":
+		oneWay: pagename
+
 	"pagename": Page:one
 	"page-name": Page:two
 	"page-1name": Page:three
