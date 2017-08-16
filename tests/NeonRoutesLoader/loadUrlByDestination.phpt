@@ -7,7 +7,7 @@ use Nette\Caching\Storages\MemoryStorage;
 use Tester\Assert;
 
 $storage = new MemoryStorage();
-$routesLoader = new NeonRoutesLoader(__DIR__  . '/routes.neon', $storage);
+$routesLoader = new NeonRoutesLoader(__DIR__  . '/routesAutoId.neon', true, $storage);
 
 $url = $routesLoader->loadUrlByDestination('WrongPresenter', 'default');
 Assert::same(null, $url);

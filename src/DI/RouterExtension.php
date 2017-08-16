@@ -13,6 +13,7 @@ class RouterExtension extends CompilerExtension
     private $defaults = [
         'extension' => null,
         'isSecured' => false,
+        'autoInternalIds' => true,
         'routingFile' => '%appDir%/router/routing.neon',
     ];
 
@@ -31,7 +32,7 @@ class RouterExtension extends CompilerExtension
         $routingFilePath = $config['routingFile'];
         $neonRoutesLoader = $cb->addDefinition($this->prefix('neonRoutesLoader'));
         $neonRoutesLoader->setClass(NeonRoutesLoader::class)
-                         ->setArguments([Helpers::expand($routingFilePath, $cb->parameters)]);
+                         ->setArguments([Helpers::expand($routingFilePath, $cb->parameters), $config['autoInternalIds']]);
 
         $neonLocalesLoader = $cb->addDefinition($this->prefix('neonLocalesLoader'));
         $neonLocalesLoader->setClass(NeonLocalesLoader::class)

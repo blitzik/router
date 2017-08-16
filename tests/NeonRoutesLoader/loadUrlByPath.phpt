@@ -7,14 +7,14 @@ use Nette\Caching\Storages\MemoryStorage;
 use Tester\Assert;
 
 $storage = new MemoryStorage();
-$routesLoader = new NeonRoutesLoader(__DIR__  . '/routes.neon', $storage);
+$routesLoaderAutoId = new NeonRoutesLoader(__DIR__  . '/routesAutoId.neon', true, $storage);
 
-$url = $routesLoader->loadUrlByPath('404path');
+$url = $routesLoaderAutoId->loadUrlByPath('404path');
 Assert::same(null, $url);
 
-//
+// ------
 
-$url = $routesLoader->loadUrlByPath('');
+$url = $routesLoaderAutoId->loadUrlByPath('');
 Assert::same('', $url->getUrlPath());
 Assert::same('Homepage:default', $url->getDestination());
 Assert::same('Homepage', $url->getPresenter());
@@ -24,7 +24,7 @@ Assert::same(false, $url->isOneWay());
 
 // -----
 
-$url = $routesLoader->loadUrlByPath('pagename');
+$url = $routesLoaderAutoId->loadUrlByPath('pagename');
 Assert::same('pagename', $url->getUrlPath());
 Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
@@ -34,7 +34,7 @@ Assert::same(false, $url->isOneWay());
 
 // -----
 
-$url = $routesLoader->loadUrlByPath('page-name');
+$url = $routesLoaderAutoId->loadUrlByPath('page-name');
 Assert::same('page-name', $url->getUrlPath());
 Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
@@ -44,7 +44,7 @@ Assert::same(false, $url->isOneWay());
 
 // -----
 
-$url = $routesLoader->loadUrlByPath('page-1name');
+$url = $routesLoaderAutoId->loadUrlByPath('page-1name');
 Assert::same('page-1name', $url->getUrlPath());
 Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
@@ -54,7 +54,7 @@ Assert::same(false, $url->isOneWay());
 
 // -----
 
-$url = $routesLoader->loadUrlByPath('en/page-name');
+$url = $routesLoaderAutoId->loadUrlByPath('en/page-name');
 Assert::same('en/page-name', $url->getUrlPath());
 Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
@@ -64,7 +64,7 @@ Assert::same(false, $url->isOneWay());
 
 // -----
 
-$url = $routesLoader->loadUrlByPath('page-with-internal-params');
+$url = $routesLoaderAutoId->loadUrlByPath('page-with-internal-params');
 Assert::same('page-with-internal-params', $url->getUrlPath());
 Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
@@ -75,7 +75,7 @@ Assert::same(false, $url->isOneWay());
 
 // ----- redirection
 
-$url = $routesLoader->loadUrlByPath('old-page');
+$url = $routesLoaderAutoId->loadUrlByPath('old-page');
 Assert::same('old-page', $url->getUrlPath());
 Assert::same('OldPage:default', $url->getDestination());
 Assert::same('OldPage', $url->getPresenter());
@@ -89,3 +89,53 @@ Assert::same('Page', $url->getUrlToRedirect()->getPresenter());
 Assert::same('default', $url->getUrlToRedirect()->getAction());
 Assert::same('pageName', $url->getUrlToRedirect()->getInternalId());
 Assert::same(false, $url->getUrlToRedirect()->isOneWay());
+
+
+// ###################################
+
+
+$storage = new MemoryStorage();
+
+$routesLoaderNoAutoId = new NeonRoutesLoader(__DIR__  . '/routesNoAutoId.neon', false, $storage);
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('');
+Assert::same('', $url->getUrlPath());
+Assert::same(null, $url->getInternalId());
+
+// -----
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('pagename');
+Assert::same('pagename', $url->getUrlPath());
+Assert::same(null, $url->getInternalId());
+
+// -----
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('page-name');
+Assert::same('page-name', $url->getUrlPath());
+Assert::same(null, $url->getInternalId());
+
+// -----
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('page-1name');
+Assert::same('page-1name', $url->getUrlPath());
+Assert::same(null, $url->getInternalId());
+
+// -----
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('en/page-name');
+Assert::same('en/page-name', $url->getUrlPath());
+Assert::same(null, $url->getInternalId());
+
+// -----
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('page-with-internal-params');
+Assert::same('page-with-internal-params', $url->getUrlPath());
+Assert::same(null, $url->getInternalId());
+
+// ----- redirection
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('old-page');
+Assert::same('old-page', $url->getUrlPath());
+Assert::same(null, $url->getInternalId());
+
+Assert::same(null, $url->getUrlToRedirect()->getInternalId());

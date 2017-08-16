@@ -12,7 +12,7 @@ use Tester\Assert;
 
 $storage = new MemoryStorage();
 $localesLoader = new NeonLocalesLoader(__DIR__ . '/routing.neon', $storage);
-$routesLoader = new NeonRoutesLoader(__DIR__ . '/routing.neon', $storage);
+$routesLoader = new NeonRoutesLoader(__DIR__ . '/routing.neon', true, $storage);
 
 
 $router = new Router($routesLoader, $localesLoader);

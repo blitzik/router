@@ -2,6 +2,7 @@
 
 namespace blitzik\Router\RoutesLoader;
 
+use blitzik\Router\Exceptions\DestinationAlreadyExistsException;
 use blitzik\Router\Exceptions\DestinationNotFoundException;
 use blitzik\Router\Exceptions\TooManyRedirectionsException;
 use blitzik\Router\Exceptions\RouteNotFoundException;
@@ -17,14 +18,22 @@ final class NeonRoutesLoader implements IRoutesLoader
     use SmartObject;
 
 
+    /** @var bool */
+    private $autoInternalIds;
+
+    /** @var Url[] */
+    private $builtUrls = [];
+
     /** @var Cache */
     private $cache;
 
 
     public function __construct(
         string $routingFilePath,
+        bool $autoInternalIds,
         IStorage $storage
     ) {
+        $this->autoInternalIds = $autoInternalIds;
         $this->cache = new Cache($storage, Router::ROUTING_NAMESPACE);
 
         $this->createUrlsList($routingFilePath);
@@ -63,6 +72,7 @@ final class NeonRoutesLoader implements IRoutesLoader
         }
 
         $this->cache->save('areRoutesProcessed', true);
+        $this->builtUrls = [];
     }
 
 
@@ -87,8 +97,16 @@ final class NeonRoutesLoader implements IRoutesLoader
 
         if (is_string($data)) {
             $url->setDestination($data);
-            $url->setInternalId($this->createIdentifier($urlPath));
+            if ($this->autoInternalIds === true) {
+                $url->setInternalId($this->createIdentifier($urlPath));
+            } else {
+                if (isset($this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()])) {
+                    throw new DestinationAlreadyExistsException();
+                }
+                $this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()] = true;
+            }
 
+            $this->builtUrls['entities'][$url->getUrlPath()] = $url;
             return $url;
         }
 
@@ -96,6 +114,7 @@ final class NeonRoutesLoader implements IRoutesLoader
             $this->setRedirectionRoute($data['oneWay'], $url, $paths);
             $url->setAsOneWay();
 
+            $this->builtUrls['entities'][$url->getUrlPath()] = $url;
             return $url;
         }
 
@@ -114,16 +133,25 @@ final class NeonRoutesLoader implements IRoutesLoader
             }
         }
 
-        if (isset($data['internalId'])) {
-            $url->setInternalId($data['internalId']);
+        if ($this->autoInternalIds === false) {
+            if (isset($this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()])) {
+                throw new DestinationAlreadyExistsException();
+            }
+            $this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()] = true;
+
         } else {
             $url->setInternalId($this->createIdentifier($urlPath));
+        }
+
+        if (isset($data['internalId'])) {
+            $url->setInternalId($data['internalId']);
         }
 
         if (isset($data['redirectTo'])) {
             $this->setRedirectionRoute($data['redirectTo'], $url, $paths);
         }
 
+        $this->builtUrls['entities'][$url->getUrlPath()] = $url;
 
         return $url;
     }
@@ -131,10 +159,16 @@ final class NeonRoutesLoader implements IRoutesLoader
 
     private function setRedirectionRoute(string $routePath, Url $url, array $paths)
     {
-        $urlToRedirect = $this->buildUrl($routePath, $paths);
+        if (isset($this->builtUrls['entities'][$routePath])) {
+            $urlToRedirect = $this->builtUrls['entities'][$routePath];
+        } else {
+            $urlToRedirect = $this->buildUrl($routePath, $paths);
+        }
+
         if ($urlToRedirect->getUrlToRedirect() !== null) {
             throw new TooManyRedirectionsException();
         }
+
         $url->setRedirectTo($urlToRedirect);
     }
 
