@@ -25,7 +25,7 @@ class Url
     private $isOneWay = false;
 
     /** @var array */
-    private $parameters = [];
+    private $internalParameters = [];
 
     
     /*
@@ -85,25 +85,25 @@ class Url
     }
 
 
-    public function addParameter(string $name, string $value): void
+    public function addInternalParameter(string $name, string $value): void
     {
-        $this->parameters[$name] = $value;
+        $this->internalParameters[$name] = $value;
     }
 
 
-    public function getParameter(string $name): ?string
+    public function getInternalParameter(string $name): ?string
     {
-        if (isset($this->parameters[$name])) {
-            return $this->parameters[$name];
+        if (isset($this->internalParameters[$name])) {
+            return $this->internalParameters[$name];
         }
 
         return null;
     }
 
 
-    public function getParameters(): array
+    public function getInternalParameters(): array
     {
-        return $this->parameters;
+        return $this->internalParameters;
     }
     
 

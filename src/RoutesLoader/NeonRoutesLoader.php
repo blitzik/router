@@ -132,7 +132,7 @@ final class NeonRoutesLoader implements IRoutesLoader
                 if ($name === 'internalId') {
                     $url->setInternalId($value);
                 } else {
-                    $url->addParameter($name, $value);
+                    $url->addInternalParameter($name, $value);
                 }
             }
         }

@@ -70,7 +70,7 @@ Assert::same('Page:default', $url->getDestination());
 Assert::same('Page', $url->getPresenter());
 Assert::same('default', $url->getAction());
 Assert::same('pageWithInternalParams', $url->getInternalId());
-Assert::same(['a' => 'c', 'b' => 'd'], $url->getParameters());
+Assert::same(['a' => 'c', 'b' => 'd'], $url->getInternalParameters());
 Assert::same(false, $url->isOneWay());
 
 // ----- redirection

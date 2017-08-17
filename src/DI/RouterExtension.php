@@ -2,6 +2,7 @@
 
 namespace blitzik\Router\DI;
 
+use blitzik\Router\ParameterFilters\IParameterFilter;
 use blitzik\Router\LocalesRouter\NeonLocalesLoader;
 use blitzik\Router\RoutesLoader\NeonRoutesLoader;
 use Nette\DI\CompilerExtension;
@@ -43,6 +44,19 @@ class RouterExtension extends CompilerExtension
                ->addSetup('setAsSecured', [$config['isSecured']])
                ->addSetup('setFilesExtension', [$config['extension']])
                ->setAutowired(false);
+    }
+
+
+    public function beforeCompile(): void
+    {
+        $cb = $this->getContainerBuilder();
+
+        $router = $cb->getDefinition($this->prefix('router'));
+
+        $filters = $cb->findByType(IParameterFilter::class);
+        foreach ($filters as $filter) {
+            $router->addSetup('addParameterFilter', [$filter]);
+        }
     }
 
 }

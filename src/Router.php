@@ -2,6 +2,8 @@
 
 namespace blitzik\Router;
 
+use blitzik\Router\Exceptions\ParameterFilterAlreadySet;
+use blitzik\Router\ParameterFilters\IParameterFilter;
 use blitzik\Router\LocalesRouter\ILocalesLoader;
 use blitzik\Router\RoutesLoader\IRoutesLoader;
 use Nette\Application\IRouter;
@@ -20,6 +22,9 @@ class Router implements IRouter
 
     const ROUTING_NAMESPACE = 'blitzik.routing';
 
+
+    /** @var IParameterFilter[] */
+    private $parameterFilters = [];
 
     /** @var ILocalesLoader */
     private $localesLoader;
@@ -53,6 +58,17 @@ class Router implements IRouter
     public function setFilesExtension(string $fileExtension = null): void
     {
         $this->filesExtension = $fileExtension;
+    }
+
+
+    public function addParameterFilter(IParameterFilter $parameterFilter)
+    {
+        foreach ($parameterFilter->getPresenters() as $presenter => $parameters) {
+            if (isset($this->parameterFilters[$presenter])) {
+                throw new ParameterFilterAlreadySet(sprintf('Parameter\'s filter for presenter "%s" is already set in this class "%s".', $presenter, get_class($this->parameterFilters[$presenter])));
+            }
+            $this->parameterFilters[$presenter] = $parameterFilter;
+        }
     }
 
 
@@ -95,7 +111,7 @@ class Router implements IRouter
         }
 
         $params = [];
-        foreach ($urlEntity->getParameters() as $name => $value) {
+        foreach ($urlEntity->getInternalParameters() as $name => $value) {
             $params[$name] = $value;
         }
 
@@ -109,6 +125,8 @@ class Router implements IRouter
         if ($internal_id !== null) {
             $params['internalId'] = $internal_id;
         }
+
+        $this->modifyParameters($params, $urlEntity->getDestination(), IParameterFilter::FILTER_IN);
 
         return new Request(
             $presenter,
@@ -155,9 +173,11 @@ class Router implements IRouter
 
         $params = $appRequest->getParameters();
         unset($params['action'], $params['locale'], $params['internalId']);
-        foreach (array_keys($urlEntity->getParameters()) as $paramName) {
+        foreach (array_keys($urlEntity->getInternalParameters()) as $paramName) {
             unset($params[$paramName]);
         }
+
+        $this->modifyParameters($params, $urlEntity->getDestination(), IParameterFilter::FILTER_OUT);
 
         $q = http_build_query($params, '', '&');
         if ($q != '') {
@@ -165,6 +185,27 @@ class Router implements IRouter
         }
 
         return $resultPath;
+    }
+
+
+    private function modifyParameters(array &$params, string $destination, string $filterType): void
+    {
+        if (isset($this->parameterFilters[$destination])) {
+            $filter = $this->parameterFilters[$destination];
+            foreach ($filter->getPresenters() as $presenter => $parameters) {
+                foreach ($parameters as $parameter) {
+                    if (isset($params[$parameter])) {
+                        if ($filterType === IParameterFilter::FILTER_IN) {
+                            $params[$parameter] = $filter->filterIn($params[$parameter]);
+                        }
+
+                        if ($filterType === IParameterFilter::FILTER_OUT) {
+                            $params[$parameter] = $filter->filterOut($params[$parameter]);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

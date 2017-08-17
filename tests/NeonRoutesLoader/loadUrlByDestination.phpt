@@ -46,7 +46,7 @@ Assert::same(false, $url->isOneWay());
 
 $url = $routesLoader->loadUrlByDestination('Page', 'default', 'pageWithInternalParams');
 Assert::same('page-with-internal-params', $url->getUrlPath());
-Assert::same(['a' => 'c', 'b' => 'd'], $url->getParameters());
+Assert::same(['a' => 'c', 'b' => 'd'], $url->getInternalParameters());
 Assert::same(false, $url->isOneWay());
 
 // ----- redirection
