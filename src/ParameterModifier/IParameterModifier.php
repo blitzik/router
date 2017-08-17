@@ -10,6 +10,8 @@ interface IParameterFilter
 
     public function getPresenters(): array;
 
+    public function getParameters(string $presenter): ?array;
+
     public function filterIn($modifiedParameter): string;
 
     public function filterOut($parameter): string;

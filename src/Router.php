@@ -192,16 +192,14 @@ class Router implements IRouter
     {
         if (isset($this->parameterFilters[$destination])) {
             $filter = $this->parameterFilters[$destination];
-            foreach ($filter->getPresenters() as $presenter => $parameters) {
-                foreach ($parameters as $parameter) {
-                    if (isset($params[$parameter])) {
-                        if ($filterType === IParameterFilter::FILTER_IN) {
-                            $params[$parameter] = $filter->filterIn($params[$parameter]);
-                        }
+            foreach ($filter->getParameters($destination) as $parameter) {
+                if (isset($params[$parameter])) {
+                    if ($filterType === IParameterFilter::FILTER_IN) {
+                        $params[$parameter] = $filter->filterIn($params[$parameter]);
+                    }
 
-                        if ($filterType === IParameterFilter::FILTER_OUT) {
-                            $params[$parameter] = $filter->filterOut($params[$parameter]);
-                        }
+                    if ($filterType === IParameterFilter::FILTER_OUT) {
+                        $params[$parameter] = $filter->filterOut($params[$parameter]);
                     }
                 }
             }
