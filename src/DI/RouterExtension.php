@@ -42,8 +42,7 @@ class RouterExtension extends CompilerExtension
         $router = $cb->addDefinition($this->prefix('router'));
         $router->setClass(Router::class)
                ->addSetup('setAsSecured', [$config['isSecured']])
-               ->addSetup('setFilesExtension', [$config['extension']])
-               ->setAutowired(false);
+               ->addSetup('setFilesExtension', [$config['extension']]);
     }
 
 
@@ -51,6 +50,7 @@ class RouterExtension extends CompilerExtension
     {
         $cb = $this->getContainerBuilder();
 
+        $cb->removeDefinition('routing.router');
         $router = $cb->getDefinition($this->prefix('router'));
 
         $filters = $cb->findByType(IParameterFilter::class);

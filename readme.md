@@ -23,7 +23,11 @@ extensions:
 ```
 
 Extension is now registered under the name **router**.
-Let's add the Router into RouteList.
+Our new router should be working at this time.
+
+If you want to combine power of this router with
+Nette's native routes, we can add our new Router
+into RouteList.
 
 Find your **RouterFactory.php** and modify it:
 
@@ -45,11 +49,14 @@ class RouterFactory
 }
 ```
 
-Add router as a service in **config.neon**:
+Edit **config.neon**:
 
 ```neon
 services:
-	router: App\RouterFactory::createRouter(@router.router)
+	router.router:
+		autowired: no
+
+	myRouter: App\RouterFactory::createRouter(@router.router)
 ```
 
 Router is ready so let's create some urls. Default location for your
