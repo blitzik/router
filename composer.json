@@ -11,7 +11,7 @@
   ],
 
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.1",
     "nette/application": "^2.4",
     "nette/di": "^2.4",
     "nette/caching": "^2.5",
