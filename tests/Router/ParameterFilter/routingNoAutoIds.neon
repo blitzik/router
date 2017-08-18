@@ -1,0 +1,6 @@
+paths:
+	"": Homepage:default
+	"pagename": Page:one
+	"page-name": Page:two
+	"page-1name": Page:three
+	"en/page-name": Page:four

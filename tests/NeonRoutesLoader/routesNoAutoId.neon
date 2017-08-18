@@ -1,11 +1,16 @@
 paths:
 	"": Homepage:default
 
-	"test":
-		oneWay: pagename
+	"old-page":
+		destination: OldPage:one
+		redirectTo: page-name
 
 	"pagename": Page:one
 	"page-name": Page:two
+
+	"old-no-previous-framework-page":
+		oneWay: page-1name
+
 	"page-1name": Page:three
 	"en/page-name": Page:four
 
@@ -14,7 +19,3 @@ paths:
 		internalParameters:
 			a: c
 			b: d
-
-	"old-page":
-		destination: OldPage:one
-		redirectTo: page-name

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 require '../bootstrap.php';
-require  './Route.php';
+require './../utils/Route.php';
 
 use blitzik\Router\LocalesRouter\NeonLocalesLoader;
 use blitzik\Router\RoutesLoader\NeonRoutesLoader;

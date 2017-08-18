@@ -148,20 +148,24 @@ class Url
     }
 
 
-    public function getPresenter():string
+    public function getPresenter(): ?string
     {
         return $this->presenter;
     }
 
 
-    public function getAction(): string
+    public function getAction(): ?string
     {
         return $this->action;
     }
 
 
-    public function getDestination(): string
+    public function getDestination(): ?string
     {
+        if ($this->presenter === null or $this->action === null) {
+            return null;
+        }
+
         return $this->presenter. ':' .$this->action;
     }
 

@@ -91,7 +91,7 @@ Assert::same('pageName', $url->getUrlToRedirect()->getInternalId());
 Assert::same(false, $url->getUrlToRedirect()->isOneWay());
 
 
-// ###################################
+// ############## NO AUTO ID ##############
 
 
 $storage = new MemoryStorage();
@@ -138,4 +138,19 @@ $url = $routesLoaderNoAutoId->loadUrlByPath('old-page');
 Assert::same('old-page', $url->getUrlPath());
 Assert::same(null, $url->getInternalId());
 
+Assert::same('Page', $url->getUrlToRedirect()->getPresenter());
+Assert::same('two', $url->getUrlToRedirect()->getAction());
 Assert::same(null, $url->getUrlToRedirect()->getInternalId());
+Assert::same(false, $url->getUrlToRedirect()->isOneWay());
+
+
+$url = $routesLoaderNoAutoId->loadUrlByPath('old-no-previous-framework-page');
+Assert::same('old-no-previous-framework-page', $url->getUrlPath());
+Assert::same(null, $url->getPresenter());
+Assert::same(null, $url->getAction());
+Assert::same(true, $url->isOneWay());
+
+Assert::same('Page', $url->getUrlToRedirect()->getPresenter());
+Assert::same('three', $url->getUrlToRedirect()->getAction());
+Assert::same(null, $url->getUrlToRedirect()->getInternalId());
+Assert::same(false, $url->getUrlToRedirect()->isOneWay());
