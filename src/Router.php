@@ -64,10 +64,13 @@ class Router implements IRouter
     public function addParameterFilter(IParameterFilter $parameterFilter)
     {
         foreach ($parameterFilter->getPresenters() as $presenter => $parameters) {
-            if (isset($this->parameterFilters[$presenter])) {
-                throw new ParameterFilterAlreadySet(sprintf('Parameter\'s filter for presenter "%s" is already set in this class "%s".', $presenter, get_class($this->parameterFilters[$presenter])));
+            foreach ($parameters as $parameterName) {
+                if (isset($this->parameterFilters[$presenter]['params'][$parameterName])) {
+                    throw new ParameterFilterAlreadySet(sprintf('Parameter\'s filter for presenter "%s" and parameter "%s" is already set in this class "%s".', $presenter, $parameterName, get_class($this->parameterFilters[$presenter]['filter'])));
+                }
+                $this->parameterFilters[$presenter]['filter'] = $parameterFilter;
+                $this->parameterFilters[$presenter]['params'][$parameterName] = $parameterFilter;
             }
-            $this->parameterFilters[$presenter] = $parameterFilter;
         }
     }
 
@@ -191,7 +194,8 @@ class Router implements IRouter
     private function modifyParameters(array &$params, string $destination, string $filterType): void
     {
         if (isset($this->parameterFilters[$destination])) {
-            $filter = $this->parameterFilters[$destination];
+            /** @var IParameterFilter $filter */
+            $filter = $this->parameterFilters[$destination]['filter'];
             foreach ($filter->getParameters($destination) as $parameter) {
                 if (isset($params[$parameter])) {
                     if ($filterType === IParameterFilter::FILTER_IN) {

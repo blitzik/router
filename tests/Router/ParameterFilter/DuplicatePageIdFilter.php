@@ -8,6 +8,7 @@ class DuplicatePageIdFilter implements IParameterFilter
     {
         return [
             'Another:default' => ['id'],
+            'Page:one' => ['name'],
             'Page:two' => ['id'], // this one causes the exception
         ];
     }

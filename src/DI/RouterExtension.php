@@ -14,7 +14,7 @@ class RouterExtension extends CompilerExtension
     private $defaults = [
         'extension' => null,
         'isSecured' => false,
-        'autoInternalIds' => true,
+        'autoInternalIds' => false,
         'routingFile' => '%appDir%/router/routing.neon',
     ];
 

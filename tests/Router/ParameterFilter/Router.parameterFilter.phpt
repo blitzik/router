@@ -43,5 +43,5 @@ Assert::exception(function () use ($router) {
     $router->addParameterFilter($df);
 },
     \blitzik\Router\Exceptions\ParameterFilterAlreadySet::class,
-    sprintf('Parameter\'s filter for presenter "%s" is already set in this class "%s".', 'Page:two', PageIdFilter::class)
+    sprintf('Parameter\'s filter for presenter "%s" and parameter "%s" is already set in this class "%s".', 'Page:two', 'id', PageIdFilter::class)
 );

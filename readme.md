@@ -85,23 +85,39 @@ paths:
 	"contact": Contact:default  # example.com/contact
 ```
 
+If you enable automatically generated internal IDs or set your own internal IDs,
+then many paths can point to exactly one presenter.<br>
+(How to enable auto internal IDs can be found in Router Settings section at the bottom of this page)
 
-Or many paths can point to exactly one presenter. 
+**routing.neon**
 
+You can write your urls this way if auto internal IDs are enabled. You don't have
+to specify internal IDs for routes pointing to same presenter.
 ```neon
-paths:	
-	# empty string means main page
+paths:	 
 	"": Homepage:default    # example.com
 	"about": Page:default   # example.com/about
-	"contact": Page:default # example.com/contact
+	"contact": Page:default # example.com/contact	
 ```
 
-For each url is created identifier that can be used in presenter to load
-desired page. Identifier is created from url path. Basically
-the alphabet characters that follows / (forward slash) or - (dash) are 
-made uppercase and the forward slashes and dashes are removed.
+On the other hand, if auto generated internal IDs are disabled and you have some urls
+pointing to same presenter, you have to specify internal IDs manually otherwise 
+an exception will be thrown.
 
-Some examples of identifiers:
+```neon
+paths:
+    "": Homepage:default # example.com 
+    "about": # example.com/about
+        destination: Page:default
+        internalId: about
+        
+	   	
+    "contact": # example.com/contact
+        destination: Page:default
+        internalId: contact
+```
+
+Some examples of generated identifiers:
 
 ```neon
 paths:	
@@ -117,8 +133,9 @@ paths:
 	
 ```
 
-You can then create templates, name them after identifiers and process
-them:
+So, let's say we have auto generated internal IDs enabled or we have many paths pointing
+to one presenter and each path has manually set internal ID. 
+We can then create templates, name them after identifiers and process them:
 
 ```text
 app
@@ -161,8 +178,8 @@ paths:
 		internalId: contactPage # your identifier
 ```
 
-If you need a parameter or more, you can define internal parameters
-under **internalParameters** section:
+Apart from internal IDs you can set an internal parameter or more under 
+**internalParameters** section:
 
 ```neon
 paths:
@@ -206,6 +223,20 @@ paths:
 	"different-page": Page:default
 ```
 
+
+If you have an old Url that you want to redirect to a new one but you don't want
+to create links on this old one url, you can set it as one way url:
+
+```neon
+paths:
+	"": Homepage:default
+	"old-page":
+		oneWay: different-page
+		
+	"different-page": Page:default
+```
+
+
 Locales
 ---
 
@@ -247,6 +278,72 @@ take this locale and create a parameter that will be passed into application.
 Only locales that are set in list can be turned into parameter.
 
 
+Parameter filters
+---
+
+You can add to router a parameter filter that will modify a value of a parameter in
+url's query string.
+
+Example: If you want to hide real, integer IDs in url.
+
+We have to create a parameter filter first, so let's create a class that
+implements interface **IParameterFilter**.
+
+```php
+class PageIdFilter implements IParameterFilter
+{
+    // this method returns array of presenters destination and each presenter
+    // contains a list of query string parameters that will be modified
+    // by methods filterIn() and filterOut()
+    public function getPresenters(): array
+    {
+        return [
+            'Homepage:default' => ['id'],
+            'Page:one' => ['id'],
+            'Page:two' => ['id'],
+            'Page:three' => ['id'],
+            'Page:four' => ['id'],
+        ];
+    }
+
+    
+    // this method have to return a list of parameters by given destination (presenter)
+    public function getParameters(string $presenter): ?array
+    {
+        if (isset($this->getPresenters()[$presenter])) {
+            return $this->getPresenters()[$presenter];
+        }
+
+        return null;
+    }
+
+
+    // method that have to "decode" encoded parameter
+    public function filterIn($modifiedParameter): string
+    {
+        return (string)hexdec($modifiedParameter);
+    }
+
+
+    // method that have to "encode" parameter
+    public function filterOut($parameter): string
+    {
+        return (string)dechex($parameter);
+    }
+}
+```
+
+So, now we have our parameter filter and all we have to do next is just register
+it in your config file as a service.
+Router extension will find this service and automatically adds it into the Router.
+
+**config.neon**
+```neon
+services:
+	- PageIdFilter
+```
+
+
 Router settings
 ---
 
@@ -264,8 +361,23 @@ router:
 If your website is secured with SSL, you can turn on an option that will
 reflect that into your urls:
 
+**config.neon**
+
 ```neon
 router:
 	routingFile: %appDir%/your/file/path/routing.neon
 	isSecured: true
+```
+
+If you do not want the Router to automatically create internalIds to your routes,
+you can disable this function.
+
+**If you disable this function, you cannot have many urls pointing to one
+  Presenter and Action unless you specify manually internal Ids.**
+
+**config.neon**
+
+```neon
+router:
+	autoInternalIds: false # by default it's TRUE
 ```

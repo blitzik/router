@@ -48,9 +48,7 @@ final class NeonRoutesLoader implements IRoutesLoader
 
     public function loadUrlByDestination(string $presenter, string $action, string $internalId = null): ?Url
     {
-        $destinationCacheKey = sprintf('%s:%s', $presenter, $action) . ($internalId !== null ? ':' . $internalId : null);
-
-        return $this->cache->load($destinationCacheKey);
+        return $this->cache->load($this->createRouteKey($presenter, $action, $internalId));
     }
 
 
@@ -63,11 +61,10 @@ final class NeonRoutesLoader implements IRoutesLoader
         $routingData = Neon::decode(file_get_contents($routingFilePath));
         foreach ($routingData['paths'] as $urlPath => $data) {
             $url = $this->buildUrl($urlPath, $routingData['paths']);
-            $destinationCacheKey = $url->getDestination() . ($url->getInternalId() !== null ? ':' . $url->getInternalId() : null);
 
             $this->cache->save($urlPath, $url);
             if (!$url->isOneWay()) {
-                $this->cache->save($destinationCacheKey, $url);
+                $this->cache->save($this->createRouteKeyByUrl($url), $url);
             }
         }
 
@@ -103,14 +100,14 @@ final class NeonRoutesLoader implements IRoutesLoader
             $url->setDestination($data);
             if ($this->autoInternalIds === true) {
                 $url->setInternalId($this->createIdentifier($urlPath));
-            } else {
-                if (isset($this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()])) {
-                    throw new DestinationAlreadyExistsException();
-                }
-                $this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()] = true;
             }
 
+            if (isset($this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)])) {
+                throw new DestinationAlreadyExistsException();
+            }
+            $this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)] = true;
             $this->builtUrls['entities'][$url->getUrlPath()] = $url;
+
             return $url;
         }
 
@@ -137,24 +134,21 @@ final class NeonRoutesLoader implements IRoutesLoader
             }
         }
 
-        if ($this->autoInternalIds === false) {
-            if (isset($this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()])) {
-                throw new DestinationAlreadyExistsException();
-            }
-            $this->builtUrls['route-map'][$url->getPresenter()][$url->getAction()] = true;
-
-        } else {
-            $url->setInternalId($this->createIdentifier($urlPath));
-        }
-
         if (isset($data['internalId'])) {
             $url->setInternalId($data['internalId']);
+
+        } elseif ($this->autoInternalIds === true) {
+            $url->setInternalId($this->createIdentifier($urlPath));
         }
 
         if (isset($data['redirectTo'])) {
             $this->setRedirectionRoute($data['redirectTo'], $url, $paths);
         }
 
+        if (isset($this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)])) {
+            throw new DestinationAlreadyExistsException();
+        }
+        $this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)] = true;
         $this->builtUrls['entities'][$url->getUrlPath()] = $url;
 
         return $url;
@@ -174,6 +168,18 @@ final class NeonRoutesLoader implements IRoutesLoader
         }
 
         $url->setRedirectTo($urlToRedirect);
+    }
+
+
+    private function createRouteKey(string $presenter, string $action, string $internalId = null): string
+    {
+        return sprintf('%s:%s', $presenter, $action) . ($internalId !== null ? ':' . $internalId : null);
+    }
+
+
+    private function createRouteKeyByUrl(Url $url): string
+    {
+        return $this->createRouteKey($url->getPresenter(), $url->getAction(), $url->getInternalId());
     }
 
 
