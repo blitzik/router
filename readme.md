@@ -225,7 +225,8 @@ paths:
 ```
 
 
-If you have an old Url that you want to redirect to a new one but you don't want
+If you have an old Url (and that Url does not have set Presenter and Action) that
+you want to redirect to a new one but you don't want
 to create links on this old one url, you can set it as one way url:
 
 ```neon

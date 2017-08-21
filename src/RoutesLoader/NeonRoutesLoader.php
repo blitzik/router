@@ -12,7 +12,6 @@ use Nette\Caching\Cache;
 use blitzik\Router\Url;
 use Nette\SmartObject;
 use Nette\Neon\Neon;
-use Tracy\Debugger;
 
 final class NeonRoutesLoader implements IRoutesLoader
 {
@@ -96,13 +95,12 @@ final class NeonRoutesLoader implements IRoutesLoader
 
         $url = new Url();
         $url->setUrlPath($urlPath);
+        if ($this->autoInternalIds) {
+            $url->setInternalId($this->createIdentifier($urlPath));
+        }
 
         if (is_string($data)) {
             $url->setDestination($data);
-            if ($this->autoInternalIds === true) {
-                $url->setInternalId($this->createIdentifier($urlPath));
-            }
-
             $this->checkDestinationExistence($url);
 
             return $url;
@@ -111,6 +109,7 @@ final class NeonRoutesLoader implements IRoutesLoader
         if (isset($data['oneWay'])) {
             $this->setRedirectionRoute($data['oneWay'], $url, $paths);
             $url->setAsOneWay();
+            $url->setInternalId(null);
 
             $this->builtUrls['entities'][$url->getUrlPath()] = $url;
             return $url;
@@ -133,9 +132,6 @@ final class NeonRoutesLoader implements IRoutesLoader
 
         if (isset($data['internalId'])) {
             $url->setInternalId($data['internalId']);
-
-        } elseif ($this->autoInternalIds === true) {
-            $url->setInternalId($this->createIdentifier($urlPath));
         }
 
         if (isset($data['redirectTo'])) {
