@@ -76,7 +76,7 @@ Urls are defined under **paths** section.
 
 Each path can point to it's own presenter.
 
-**routing.neon**
+**routing.neon** (auto IDs are disabled)
 ```neon
 paths:	
 	# empty string means main page
@@ -89,10 +89,10 @@ If you enable automatically generated internal IDs or set your own internal IDs,
 then many paths can point to exactly one presenter.<br>
 (How to enable auto internal IDs can be found in Router Settings section at the bottom of this page)
 
-**routing.neon**
-
 You can write your urls this way if auto internal IDs are enabled. You don't have
 to specify internal IDs for routes pointing to same presenter.
+
+**routing.neon** (auto IDs are enabled)
 ```neon
 paths:	 
 	"": Homepage:default    # example.com
@@ -104,6 +104,7 @@ On the other hand, if auto generated internal IDs are disabled and you have some
 pointing to same presenter, you have to specify internal IDs manually otherwise 
 an exception will be thrown.
 
+**routing.neon** (auto IDs are disabled)
 ```neon
 paths:
     "": Homepage:default # example.com 
@@ -164,7 +165,7 @@ class PagePresenter extends Nette\Application\UI\Presenter
 If you don't like automatically created identifiers, you can set your
 own:
 
-**routing.neon**
+**routing.neon** (auto IDs are enabled)
 
 ```neon
 paths:
@@ -292,29 +293,11 @@ implements interface **IParameterFilter**.
 ```php
 class PageIdFilter implements IParameterFilter
 {
-    // this method returns array of presenters destination and each presenter
-    // contains a list of query string parameters that will be modified
-    // by methods filterIn() and filterOut()
-    public function getPresenters(): array
+    // Method returns name of the filter
+    // (must be unique otherwise an exception will be thrown)
+    public function getName(): string
     {
-        return [
-            'Homepage:default' => ['id'],
-            'Page:one' => ['id'],
-            'Page:two' => ['id'],
-            'Page:three' => ['id'],
-            'Page:four' => ['id'],
-        ];
-    }
-
-    
-    // this method have to return a list of parameters by given destination (presenter)
-    public function getParameters(string $presenter): ?array
-    {
-        if (isset($this->getPresenters()[$presenter])) {
-            return $this->getPresenters()[$presenter];
-        }
-
-        return null;
+        return 'PageIdFilter';
     }
 
 
@@ -333,14 +316,29 @@ class PageIdFilter implements IParameterFilter
 }
 ```
 
-So, now we have our parameter filter and all we have to do next is just register
-it in your config file as a service.
+So, we've created our parameter filter and we have to register it in our
+config file as a service.
 Router extension will find this service and automatically adds it into the Router.
 
 **config.neon**
 ```neon
 services:
 	- PageIdFilter
+```
+
+Parameter filter is now ready to use. Each path in routing file can have "filters"
+section where we can specify which parameters should be affected by our filters.
+
+**routing.neon** (auto IDs are disabled)
+```neon
+paths:
+	"": Homepage:default
+	
+	products:
+		destination: Product:overview
+		filters:
+			PageIdFilter: # our created filter
+				- id  # name of affected parameter
 ```
 
 
@@ -369,15 +367,12 @@ router:
 	isSecured: true
 ```
 
-If you do not want the Router to automatically create internalIds to your routes,
-you can disable this function.
-
-**If you disable this function, you cannot have many urls pointing to one
-  Presenter and Action unless you specify manually internal Ids.**
+If you want the Router to automatically create internalIds to your routes,
+you can enable this function.
 
 **config.neon**
 
 ```neon
 router:
-	autoInternalIds: false # by default it's TRUE
+	autoInternalIds: true # by default it's FALSE
 ```

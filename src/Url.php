@@ -2,6 +2,7 @@
 
 namespace blitzik\Router;
 
+use blitzik\Router\Exceptions\ParameterFilterAlreadySet;
 use Nette\Utils\Strings;
 
 class Url
@@ -26,6 +27,9 @@ class Url
 
     /** @var array */
     private $internalParameters = [];
+    
+    /** @var array */
+    private $filters = [];
 
     
     /*
@@ -91,6 +95,25 @@ class Url
     }
 
 
+    public function addFilter(string $filterName, array $applyToParameters = []): void
+    {
+        foreach ($applyToParameters as $parameterName) {
+            if (isset($this->filters[$parameterName])) {
+                throw new ParameterFilterAlreadySet();
+            }
+            $this->filters['parameters'][$parameterName] = $filterName;
+        }
+        $this->filters['filters'][$filterName] = $applyToParameters;
+    }
+
+
+    /*
+    * --------------------
+    * ----- GETTERS ------
+    * --------------------
+    */
+
+
     public function getInternalParameter(string $name): ?string
     {
         if (isset($this->internalParameters[$name])) {
@@ -105,13 +128,32 @@ class Url
     {
         return $this->internalParameters;
     }
-    
 
-    /*
-     * --------------------
-     * ----- GETTERS ------
-     * --------------------
-     */
+
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
+
+
+    public function getFilterByParameterName(string $parameterName): ?string
+    {
+        if (isset($this->filters['parameters'][$parameterName])) {
+            return $this->filters['parameters'][$parameterName];
+        }
+
+        return null;
+    }
+
+
+    public function getParametersByFilter(string $filterName): ?array
+    {
+        if (isset($this->filters['filters'][$filterName])) {
+            return $this->filters['filters'][$filterName];
+        }
+
+        return null;
+    }
 
 
     public function getUrlPath(): string

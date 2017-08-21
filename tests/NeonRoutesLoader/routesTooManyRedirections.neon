@@ -1,0 +1,10 @@
+paths:
+	"": Homepage:default
+	"pagename": Page:default
+
+	"old-page":
+		destination: OldPage:default
+		redirectTo: pagename
+
+	"old-old-page":
+		oneWay: old-page

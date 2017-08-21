@@ -12,6 +12,7 @@ use Nette\Caching\Cache;
 use blitzik\Router\Url;
 use Nette\SmartObject;
 use Nette\Neon\Neon;
+use Tracy\Debugger;
 
 final class NeonRoutesLoader implements IRoutesLoader
 {
@@ -102,11 +103,7 @@ final class NeonRoutesLoader implements IRoutesLoader
                 $url->setInternalId($this->createIdentifier($urlPath));
             }
 
-            if (isset($this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)])) {
-                throw new DestinationAlreadyExistsException();
-            }
-            $this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)] = true;
-            $this->builtUrls['entities'][$url->getUrlPath()] = $url;
+            $this->checkDestinationExistence($url);
 
             return $url;
         }
@@ -145,11 +142,13 @@ final class NeonRoutesLoader implements IRoutesLoader
             $this->setRedirectionRoute($data['redirectTo'], $url, $paths);
         }
 
-        if (isset($this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)])) {
-            throw new DestinationAlreadyExistsException();
+        if (isset($data['filters'])) {
+            foreach ($data['filters'] as $filterName => $parameters) {
+                $url->addFilter($filterName, $parameters);
+            }
         }
-        $this->builtUrls['route-map'][$this->createRouteKeyByUrl($url)] = true;
-        $this->builtUrls['entities'][$url->getUrlPath()] = $url;
+
+        $this->checkDestinationExistence($url);
 
         return $url;
     }
@@ -164,7 +163,7 @@ final class NeonRoutesLoader implements IRoutesLoader
         }
 
         if ($urlToRedirect->getUrlToRedirect() !== null) {
-            throw new TooManyRedirectionsException();
+            throw new TooManyRedirectionsException('Only one redirection is allowed. Check your routing file.');
         }
 
         $url->setRedirectTo($urlToRedirect);
@@ -180,6 +179,18 @@ final class NeonRoutesLoader implements IRoutesLoader
     private function createRouteKeyByUrl(Url $url): string
     {
         return $this->createRouteKey($url->getPresenter(), $url->getAction(), $url->getInternalId());
+    }
+
+
+    private function checkDestinationExistence(Url $url): void
+    {
+        $key = $this->createRouteKeyByUrl($url);
+        if (isset($this->builtUrls['route-map'][$key])) {
+            throw new DestinationAlreadyExistsException(sprintf('Destination "%s"[%s] already set. Check your Presenter:action and internalID in your routing file.', $url->getUrlPath(), $key));
+        }
+
+        $this->builtUrls['route-map'][$key] = true;
+        $this->builtUrls['entities'][$url->getUrlPath()] = $url;
     }
 
 

@@ -1,6 +1,21 @@
 paths:
 	"": Homepage:default
-	"pagename": Page:one
-	"page-name": Page:two
-	"page-1name": Page:three
-	"en/page-name": Page:four
+	"pagename":
+		destination: Page:default
+		internalId: one
+		filters:
+			PageIdFilter:
+				- id
+
+	"page-name":
+		destination: Page:default
+		internalId: two
+
+	"page-1name":
+		destination: Page:one
+		filters:
+			PageIdFilter:
+				- id
+
+	"en/page-name":
+		destination: Page:two

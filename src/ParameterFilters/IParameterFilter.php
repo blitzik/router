@@ -8,9 +8,7 @@ interface IParameterFilter
     const FILTER_OUT = 'out';
 
 
-    public function getPresenters(): array;
-
-    public function getParameters(string $presenter): ?array;
+    public function getName(): string;
 
     public function filterIn($modifiedParameter): string;
 

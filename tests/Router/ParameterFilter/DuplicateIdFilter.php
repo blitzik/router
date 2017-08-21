@@ -2,23 +2,23 @@
 
 use blitzik\Router\ParameterFilters\IParameterFilter;
 
-class PageIdFilter implements IParameterFilter
+class DuplicateIdFilter implements IParameterFilter
 {
     public function getName(): string
     {
-        return 'PageIdFilter';
+        return 'PageIdFilter'; // duplicate filter name
     }
 
 
     public function filterIn($modifiedParameter): string
     {
-        return (string)hexdec($modifiedParameter);
+        return 'abcde';
     }
 
 
     public function filterOut($parameter): string
     {
-        return (string)dechex($parameter);
+        return 'abcde';
     }
 
 }

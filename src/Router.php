@@ -10,7 +10,6 @@ use Nette\Application\IRouter;
 use Nette\Application\Request;
 use Nette\Http\IRequest;
 use Nette\SmartObject;
-use Nette\Http\Url;
 
 class Router implements IRouter
 {
@@ -23,7 +22,7 @@ class Router implements IRouter
     const ROUTING_NAMESPACE = 'blitzik.routing';
 
 
-    /** @var IParameterFilter[] */
+    /** @var array */
     private $parameterFilters = [];
 
     /** @var ILocalesLoader */
@@ -63,15 +62,10 @@ class Router implements IRouter
 
     public function addParameterFilter(IParameterFilter $parameterFilter)
     {
-        foreach ($parameterFilter->getPresenters() as $presenter => $parameters) {
-            foreach ($parameters as $parameterName) {
-                if (isset($this->parameterFilters[$presenter]['params'][$parameterName])) {
-                    throw new ParameterFilterAlreadySet(sprintf('Parameter\'s filter for presenter "%s" and parameter "%s" is already set in this class "%s".', $presenter, $parameterName, get_class($this->parameterFilters[$presenter]['filter'])));
-                }
-                $this->parameterFilters[$presenter]['filter'] = $parameterFilter;
-                $this->parameterFilters[$presenter]['params'][$parameterName] = $parameterFilter;
-            }
+        if (isset($this->parameterFilters[$parameterFilter->getName()])) {
+            throw new ParameterFilterAlreadySet(sprintf('Parameter Filter "%s" already set. You have more Parameter Filters with same name.', $parameterFilter->getName()));
         }
+        $this->parameterFilters[$parameterFilter->getName()] = $parameterFilter;
     }
 
 
@@ -129,7 +123,7 @@ class Router implements IRouter
             $params['internalId'] = $internal_id;
         }
 
-        $this->modifyParameters($params, $urlEntity->getDestination(), IParameterFilter::FILTER_IN);
+        $this->modifyParameters($params, $urlEntity, IParameterFilter::FILTER_IN);
 
         return new Request(
             $presenter,
@@ -141,7 +135,7 @@ class Router implements IRouter
     }
 
 
-    public function constructUrl(Request $appRequest, Url $refUrl): ?string
+    public function constructUrl(Request $appRequest, \Nette\Http\Url $refUrl): ?string
     {
         $urlEntity = $this->routesLoader
                           ->loadUrlByDestination(
@@ -180,7 +174,7 @@ class Router implements IRouter
             unset($params[$paramName]);
         }
 
-        $this->modifyParameters($params, $urlEntity->getDestination(), IParameterFilter::FILTER_OUT);
+        $this->modifyParameters($params, $urlEntity, IParameterFilter::FILTER_OUT);
 
         $q = http_build_query($params, '', '&');
         if ($q != '') {
@@ -191,21 +185,25 @@ class Router implements IRouter
     }
 
 
-    private function modifyParameters(array &$params, string $destination, string $filterType): void
+    private function modifyParameters(array &$params, Url $url, string $filterType): void
     {
-        if (isset($this->parameterFilters[$destination])) {
-            /** @var IParameterFilter $filter */
-            $filter = $this->parameterFilters[$destination]['filter'];
-            foreach ($filter->getParameters($destination) as $parameter) {
-                if (isset($params[$parameter])) {
-                    if ($filterType === IParameterFilter::FILTER_IN) {
-                        $params[$parameter] = $filter->filterIn($params[$parameter]);
-                    }
+        foreach ($params as $parameterName => $value) {
+            $filterName = $url->getFilterByParameterName($parameterName);
+            if ($filterName === null) {
+                continue;
+            }
 
-                    if ($filterType === IParameterFilter::FILTER_OUT) {
-                        $params[$parameter] = $filter->filterOut($params[$parameter]);
-                    }
-                }
+            if (!isset($this->parameterFilters[$filterName])) {
+                continue;
+            }
+
+            $filter = $this->parameterFilters[$filterName];
+            if ($filterType === IParameterFilter::FILTER_IN) {
+                $params[$parameterName] = $filter->filterIn($params[$parameterName]);
+            }
+
+            if ($filterType === IParameterFilter::FILTER_OUT) {
+                $params[$parameterName] = $filter->filterOut($params[$parameterName]);
             }
         }
     }
