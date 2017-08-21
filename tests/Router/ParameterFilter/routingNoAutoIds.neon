@@ -14,8 +14,7 @@ paths:
 	"page-1name":
 		destination: Page:one
 		filters:
-			PageIdFilter:
-				- id
+			PageIdFilter: id
 
 	"en/page-name":
 		destination: Page:two

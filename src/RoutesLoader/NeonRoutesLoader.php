@@ -144,6 +144,9 @@ final class NeonRoutesLoader implements IRoutesLoader
 
         if (isset($data['filters'])) {
             foreach ($data['filters'] as $filterName => $parameters) {
+                if (!is_array($parameters)) {
+                    $parameters = [$parameters];
+                }
                 $url->addFilter($filterName, $parameters);
             }
         }
