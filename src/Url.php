@@ -95,15 +95,19 @@ class Url
     }
 
 
-    public function addFilter(string $filterName, array $applyToParameters = []): void
+    public function addFilter(string $filterName, array $applyToParameters): void
     {
+        $applyToParameters = array_unique($applyToParameters);
+        if (empty($applyToParameters)) {
+            return;
+        }
+
         foreach ($applyToParameters as $parameterName) {
             if (isset($this->filters[$parameterName])) {
-                throw new ParameterFilterAlreadySet();
+                throw new ParameterFilterAlreadySet(sprintf('Parameter "%s" of path "%s" can be processed by only ONE Parameter Filter!', $this->urlPath, $parameterName));
             }
-            $this->filters['parameters'][$parameterName] = $filterName;
+            $this->filters[$parameterName] = $filterName;
         }
-        $this->filters['filters'][$filterName] = $applyToParameters;
     }
 
 
@@ -138,18 +142,8 @@ class Url
 
     public function getFilterByParameterName(string $parameterName): ?string
     {
-        if (isset($this->filters['parameters'][$parameterName])) {
-            return $this->filters['parameters'][$parameterName];
-        }
-
-        return null;
-    }
-
-
-    public function getParametersByFilter(string $filterName): ?array
-    {
-        if (isset($this->filters['filters'][$filterName])) {
-            return $this->filters['filters'][$filterName];
+        if (isset($this->filters[$parameterName])) {
+            return $this->filters[$parameterName];
         }
 
         return null;

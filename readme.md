@@ -303,14 +303,14 @@ class PageIdFilter implements IParameterFilter
 
 
     // method that have to "decode" encoded parameter
-    public function filterIn($modifiedParameter): string
+    public function filterIn($modifiedParameter): ?string
     {
         return (string)hexdec($modifiedParameter);
     }
 
 
     // method that have to "encode" parameter
-    public function filterOut($parameter): string
+    public function filterOut($parameter): ?string
     {
         return (string)dechex($parameter);
     }

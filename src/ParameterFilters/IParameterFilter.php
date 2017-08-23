@@ -10,7 +10,7 @@ interface IParameterFilter
 
     public function getName(): string;
 
-    public function filterIn($modifiedParameter): string;
+    public function filterIn($modifiedParameter): ?string;
 
-    public function filterOut($parameter): string;
+    public function filterOut($parameter): ?string;
 }

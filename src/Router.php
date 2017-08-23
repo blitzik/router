@@ -198,12 +198,17 @@ class Router implements IRouter
             }
 
             $filter = $this->parameterFilters[$filterName];
+            $p = $params[$parameterName];
             if ($filterType === IParameterFilter::FILTER_IN) {
-                $params[$parameterName] = $filter->filterIn($params[$parameterName]);
+                $p = $filter->filterIn($params[$parameterName]);
             }
 
             if ($filterType === IParameterFilter::FILTER_OUT) {
-                $params[$parameterName] = $filter->filterOut($params[$parameterName]);
+                $p = $filter->filterOut($params[$parameterName]);
+            }
+
+            if ($p !== null) {
+                $params[$parameterName] = $p;
             }
         }
     }
