@@ -2,7 +2,7 @@
 
 require '../bootstrap.php';
 
-use blitzik\Router\LocalesRouter\NeonLocalesLoader;
+use blitzik\Router\LocalesLoader\NeonLocalesLoader;
 use Nette\Caching\Storages\MemoryStorage;
 use Tester\Assert;
 

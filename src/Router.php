@@ -4,7 +4,7 @@ namespace blitzik\Router;
 
 use blitzik\Router\Exceptions\ParameterFilterAlreadySet;
 use blitzik\Router\ParameterFilters\IParameterFilter;
-use blitzik\Router\LocalesRouter\ILocalesLoader;
+use blitzik\Router\LocalesLoader\ILocalesLoader;
 use blitzik\Router\RoutesLoader\IRoutesLoader;
 use Nette\Application\IRouter;
 use Nette\Application\Request;

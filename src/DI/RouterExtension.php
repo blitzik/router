@@ -3,7 +3,7 @@
 namespace blitzik\Router\DI;
 
 use blitzik\Router\ParameterFilters\IParameterFilter;
-use blitzik\Router\LocalesRouter\NeonLocalesLoader;
+use blitzik\Router\LocalesLoader\NeonLocalesLoader;
 use blitzik\Router\RoutesLoader\NeonRoutesLoader;
 use Nette\DI\CompilerExtension;
 use blitzik\Router\Router;

@@ -3,7 +3,7 @@
 require '../bootstrap.php';
 require './../utils/Route.php';
 
-use blitzik\Router\LocalesRouter\NeonLocalesLoader;
+use blitzik\Router\LocalesLoader\NeonLocalesLoader;
 use blitzik\Router\RoutesLoader\NeonRoutesLoader;
 use Nette\Caching\Storages\MemoryStorage;
 use blitzik\Router\Router;

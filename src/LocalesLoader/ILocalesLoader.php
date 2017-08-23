@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace blitzik\Router\LocalesRouter;
+namespace blitzik\Router\LocalesLoader;
 
 interface ILocalesLoader
 {
