@@ -206,10 +206,6 @@ class Router implements IRouter
             if ($filterType === IParameterFilter::FILTER_OUT) {
                 $p = $filter->filterOut($params[$parameterName]);
             }
-
-            if ($p !== null) {
-                $params[$parameterName] = $p;
-            }
         }
     }
 
